@@ -152,12 +152,7 @@ function App() {
     isLoading: true,
   })
 
-  const fetchCurrentWeather = async() => {
-    setWeatherElement((prevState) => ({
-      ...prevState,
-      isLoading: true,
-    }))
-
+  const fetchCurrentWeather = async() => {    
     const response = await fetch(
       `https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=${AUTHORIZATION_KEY}&locationName=${LOCATION_NAME}`
     )
@@ -171,14 +166,12 @@ function App() {
       return neededElements
     }, {})
     
-    setWeatherElement((prevState) => ({
-      ...prevState,
+    return {      
       locationName: locationData.locationName,      
       windSpeed: weatherElements.WDSD,
       temperature: weatherElements.TEMP,      
-      observationTime: locationData.time.obsTime,
-      isLoading: false,
-    }))
+      observationTime: locationData.time.obsTime      
+    }
   }
 
   const fetchWeatherForecast = async() => {
@@ -194,18 +187,30 @@ function App() {
       return neededElements
     }, {})
 
-    setWeatherElement((prevState) => ({
-      ...prevState,
+    return {      
       description: weatherElements.Wx.parameterName,
       weatherCode: weatherElements.Wx.parameterValue,
       rainPossibility: weatherElements.PoP.parameterName,
       comfortability: weatherElements.CI.parameterName
-    }))
+    }
   }
 
   useEffect(() => {    
-    fetchCurrentWeather()
-    fetchWeatherForecast()
+    const fetchData = async() => {
+      setWeatherElement((prevState) => ({
+        ...prevState,
+        isLoading: true,
+      }))
+
+      const [currentWeather, weatherForecast] = await Promise.all([fetchCurrentWeather(), fetchWeatherForecast()])
+      
+      setWeatherElement({
+        ...currentWeather,
+        ...weatherForecast,
+        isLoading: false
+      })
+    }
+    fetchData()
   }, [])
 
   const {
