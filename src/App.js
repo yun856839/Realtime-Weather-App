@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import styled from '@emotion/styled'
 import dayjs from 'dayjs'
 import { ReactComponent as DayCloudyIcon } from './images/day-cloudy.svg' 
@@ -195,23 +195,24 @@ function App() {
     }
   }
 
-  useEffect(() => {    
-    const fetchData = async() => {
-      setWeatherElement((prevState) => ({
-        ...prevState,
-        isLoading: true,
-      }))
+  const fetchData = useCallback(async() => {
+    setWeatherElement((prevState) => ({
+      ...prevState,
+      isLoading: true,
+    }))
 
-      const [currentWeather, weatherForecast] = await Promise.all([fetchCurrentWeather(), fetchWeatherForecast()])
-      
-      setWeatherElement({
-        ...currentWeather,
-        ...weatherForecast,
-        isLoading: false
-      })
-    }
-    fetchData()
+    const [currentWeather, weatherForecast] = await Promise.all([fetchCurrentWeather(), fetchWeatherForecast()])
+    
+    setWeatherElement({
+      ...currentWeather,
+      ...weatherForecast,
+      isLoading: false
+    })
   }, [])
+
+  useEffect(() => {        
+    fetchData()
+  }, [fetchData])
 
   const {
     observationTime,
@@ -252,10 +253,7 @@ function App() {
           </Rain>
 
           <Refresh 
-            onClick={() => {
-              fetchCurrentWeather()
-              fetchWeatherForecast()
-            }}
+            onClick={ fetchData }
             isLoading={ isLoading }
           > 
             最後觀測時間：
