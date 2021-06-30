@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import styled from '@emotion/styled'
 import dayjs from 'dayjs'
 import WeatherIcon from './components/WeatherIcon'
@@ -7,6 +7,7 @@ import { ReactComponent as RainIcon } from './images/rain.svg'
 import { ReactComponent as RefreshIcon } from './images/refresh.svg'
 import { ReactComponent as LoadingIcon } from './images/loading.svg'
 import { ThemeProvider } from '@emotion/react'
+import { getMoment } from './utils/helpers'
 
 const theme = {
   light: {
@@ -26,7 +27,7 @@ const theme = {
     temperatureColor: '#dddddd',
     textColor: '#cccccc',
   },
-};
+}
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.backgroundColor};
@@ -147,6 +148,12 @@ function App() {
     comfortability: '',
     isLoading: true,
   })
+  // TODO
+  const moment = useMemo(() => getMoment(LOCATION_NAME_FORECAST), [])
+
+  useEffect(() => {
+    setCurrentTheme(moment === 'day' ? 'light' : 'dark')
+  }, [moment])
 
   const fetchCurrentWeather = async() => {    
     const response = await fetch(
@@ -237,7 +244,7 @@ function App() {
               { Math.round(temperature) } <Celsius>°C</Celsius>
             </Temperature>
 
-            <WeatherIcon weatherCode={weatherCode} moment='night'/>
+            <WeatherIcon weatherCode={ weatherCode } moment={ moment } />
           </CurrentWeather>
           
           <AirFlow>
