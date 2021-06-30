@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import styled from '@emotion/styled'
 import dayjs from 'dayjs'
-import { ReactComponent as DayCloudyIcon } from './images/day-cloudy.svg' 
+import WeatherIcon from './components/WeatherIcon'
 import { ReactComponent as AirFlowIcon } from './images/airFlow.svg'
 import { ReactComponent as RainIcon } from './images/rain.svg'
 import { ReactComponent as RefreshIcon } from './images/refresh.svg'
@@ -101,10 +101,6 @@ const Rain = styled.div`
     height: auto;
     margin-right: 30px;
   }
-`;
-
-const DayCloudy = styled(DayCloudyIcon)`
-  flex-basis: 30%;
 `;
 
 const Refresh = styled.div`
@@ -223,12 +219,12 @@ function App() {
     rainPossibility,
     comfortability,
     isLoading,
+    weatherCode
   } = weatherElement;
 
   return (
     <ThemeProvider theme={theme[currentTheme]}>
-      <Container>      
-         {console.log('render, isLoading: ', isLoading)}  
+      <Container>                
         <WeatherCard>
           <Location>{ locationName }</Location>
 
@@ -241,7 +237,7 @@ function App() {
               { Math.round(temperature) } <Celsius>°C</Celsius>
             </Temperature>
 
-            <DayCloudy />
+            <WeatherIcon weatherCode={weatherCode} moment='night'/>
           </CurrentWeather>
           
           <AirFlow>
