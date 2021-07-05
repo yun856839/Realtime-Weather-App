@@ -4,6 +4,7 @@ import { ThemeProvider } from '@emotion/react'
 import { getMoment } from './utils/helpers'
 import WeatherCard from './views/WeatherCard'
 import useWeatherAPI from './hooks/useWeatherAPI'
+import WeatherSetting from './views/WeatherSetting'
 
 const theme = {
   light: {
@@ -38,6 +39,8 @@ const LOCATION_NAME = '臺北'
 const LOCATION_NAME_FORECAST = '臺北市'
 
 function App() {  
+  const [currentPage, setCurrentPage] = useState('WeatherCard')
+
   const [currentTheme, setCurrentTheme] = useState('light')
 
   const [weatherElement, fetchData] = useWeatherAPI({
@@ -54,12 +57,15 @@ function App() {
  
   return (
     <ThemeProvider theme={theme[currentTheme]}>
-      <Container>                
-        <WeatherCard
-          weatherElement={weatherElement}
-          moment={moment}
-          fetchData={fetchData}
-        />
+      <Container>  \
+        {currentPage === 'WeatherCard' && (               
+          <WeatherCard
+            weatherElement={weatherElement}
+            moment={moment}
+            fetchData={fetchData}
+          />
+        )}
+        {currentPage === 'WeatherSetting' && <WeatherSetting />}
       </Container>
     </ThemeProvider>
   );
