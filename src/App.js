@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import styled from '@emotion/styled'
 import { ThemeProvider } from '@emotion/react'
-import { getMoment } from './utils/helpers'
+import { getMoment, findLocations } from './utils/helpers'
 import WeatherCard from './views/WeatherCard'
 import useWeatherAPI from './hooks/useWeatherAPI'
 import WeatherSetting from './views/WeatherSetting'
@@ -35,10 +35,15 @@ const Container = styled.div`
 `
 
 const AUTHORIZATION_KEY = 'CWB-9C2E7558-9E72-48F6-9F55-9A8F54C01CEA'
-const LOCATION_NAME = '臺北'
-const LOCATION_NAME_FORECAST = '臺北市'
 
 function App() {  
+  const [currentCity, setCurrentCity] = useState('臺北市')
+  const currentLocation = useMemo(() => findLocations(currentCity), [currentCity]) 
+  const { cityName, locationName, sunriseCityName } = currentLocation
+  const handleCurrentCityChange = (currentCity) => {
+    setCurrentCity(currentCity)
+  }
+
   const [currentPage, setCurrentPage] = useState('WeatherCard')
   const handleCurrentPageChange = (currentPage) => {
     setCurrentPage(currentPage)
@@ -47,12 +52,12 @@ function App() {
   const [currentTheme, setCurrentTheme] = useState('light')
 
   const [weatherElement, fetchData] = useWeatherAPI({
-    locationName: LOCATION_NAME,
-    cityName: LOCATION_NAME_FORECAST,
+    locationName,
+    cityName,
     authorizationKey: AUTHORIZATION_KEY,
-  });
-  // TODO
-  const moment = useMemo(() => getMoment(LOCATION_NAME_FORECAST), [])
+  })
+  
+  const moment = useMemo(() => getMoment(sunriseCityName), [sunriseCityName])
 
   useEffect(() => {
     setCurrentTheme(moment === 'day' ? 'light' : 'dark')
@@ -63,6 +68,7 @@ function App() {
       <Container>  \
         {currentPage === 'WeatherCard' && (               
           <WeatherCard
+            cityName={cityName}
             weatherElement={weatherElement}
             moment={moment}
             fetchData={fetchData}
@@ -71,6 +77,8 @@ function App() {
         )}
         {currentPage === 'WeatherSetting' && (
           <WeatherSetting 
+            cityName={cityName}
+            handleCurrentCityChange={handleCurrentCityChange}
             handleCurrentPageChange={handleCurrentPageChange}
           />
         )}
