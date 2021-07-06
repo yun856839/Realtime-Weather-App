@@ -91,17 +91,17 @@ const Save = styled.button`
 `
 
 const WeatherSetting = ({ cityName, handleCurrentPageChange, handleCurrentCityChange }) => {
-  const [locationName, setLocationName] = useState('cityName')
+  const [locationName, setLocationName] = useState(cityName)
 
   const handleChange = (e) => {
-    console.log(e.target.value)
-
     setLocationName(e.target.value)
   }
 
   const handleSave = () => {
     handleCurrentCityChange(locationName)
     handleCurrentPageChange('WeatherCard')
+
+    localStorage.setItem('cityName', locationName)
   }
 
   return (
